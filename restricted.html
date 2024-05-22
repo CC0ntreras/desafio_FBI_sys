@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Area Restringida</title>
+</head>
+<body>
+  <h1>Area Restringida</h1>
+  <script>
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      document.body.innerHTML = `
+        <p>Token no encontrado. Acceso Rechazado.</p>
+        <a href="/">Go back to login</a>
+      `;
+    } else {
+      fetch('/restricted', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      })
+      .then(response => response.text())
+      .then(data => {
+        document.body.innerHTML = data;
+        if (data.includes('Usuario no autorizado')) {
+          document.body.innerHTML += '<br><a href="/">Volver al login</a>';
+        }
+      })
+      .catch(error => {
+        document.body.innerHTML = `
+          <p>Error: ${error.message}</p>
+          <a href="/">Volver al login</a>
+        `;
+      });
+    }
+  </script>
+</body>
+</html>
